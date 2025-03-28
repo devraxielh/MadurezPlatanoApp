@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome } from '@expo/vector-icons';
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000/predict';
+const API_URL = 'https://modeloclasificadormadurezplatano.onrender.com/predict';
 
 const App = () => {
   const [image, setImage] = useState(null);
