@@ -111,9 +111,7 @@ const App = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Clasificador de Madurez de Plátanos</Text>
-      
       {image && <Image source={{ uri: image }} style={styles.image} />}
-      
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : prediction ? (
@@ -126,18 +124,15 @@ const App = () => {
           </Text>
         </View>
       ) : null}
-      
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={pickImage}>
           <FontAwesome name="image" size={20} color="white" style={styles.icon} />
           <Text style={styles.buttonText}>Elegir de Galería</Text>
         </TouchableOpacity>
-        
         <TouchableOpacity style={styles.button} onPress={takePhoto}>
           <FontAwesome name="camera" size={20} color="white" style={styles.icon} />
           <Text style={styles.buttonText}>Usar Cámara</Text>
         </TouchableOpacity>
-        
         {image && (
           <TouchableOpacity style={styles.predictButton} onPress={predictImage}>
             <FontAwesome name="search" size={20} color="white" style={styles.icon} />
@@ -165,8 +160,8 @@ const styles = StyleSheet.create({
     color: '#2c3e50',
   },
   image: {
-    width: 360,
-    height: 360,
+    width: 340,
+    height: 340,
     resizeMode: 'contain',
     marginBottom: 20,
     borderRadius: 10,
