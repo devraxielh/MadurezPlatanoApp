@@ -4,7 +4,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome } from '@expo/vector-icons';
 import axios from 'axios';
 
-const API_URL = 'https://modeloclasificadormadurezplatano.onrender.com/predict';
+// URL de la API (usar HTTPS si está disponible)
+const API_URL = 'http://5.181.218.180:8000/predict';
+
+// Configuración de Axios con HTTPS
+const instance = axios.create({
+  baseURL: API_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
 
 const App = () => {
   const [image, setImage] = useState(null);
@@ -12,6 +19,7 @@ const App = () => {
   const [confidence, setConfidence] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Función para seleccionar imagen de la galería
   const pickImage = async () => {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -31,6 +39,7 @@ const App = () => {
     }
   };
 
+  // Función para capturar una foto con la cámara
   const takePhoto = async () => {
     try {
       await ImagePicker.requestCameraPermissionsAsync();
@@ -50,6 +59,7 @@ const App = () => {
     }
   };
 
+  // Función para enviar imagen a la API y obtener predicción
   const predictImage = async () => {
     if (!image) {
       Alert.alert('Error', 'Por favor selecciona una imagen primero');
@@ -74,22 +84,20 @@ const App = () => {
         reader.readAsDataURL(blob);
       });
 
-      // Enviar a la API
-      const apiResponse = await axios.post(API_URL, {
-        image: base64Image,
-      }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      // Enviar imagen a la API
+      const apiResponse = await instance.post('/', { image: base64Image });
 
       setPrediction(apiResponse.data.prediction);
       setConfidence(apiResponse.data.confidence);
     } catch (error) {
+      console.error('Error en la predicción:', error);
       Alert.alert('Error', error.response?.data?.error || 'Error al predecir la imagen');
     } finally {
       setLoading(false);
     }
   };
 
+  // Función para traducir la predicción a español
   const translatePrediction = (pred) => {
     const translations = {
       freshripe: 'Fresco Maduro',
@@ -102,10 +110,10 @@ const App = () => {
     return translations[pred] || pred;
   };
 
+  // Función para formatear la confianza
   const formatConfidence = (conf) => {
     if (conf === null || conf === undefined) return '';
-    const percentage = (conf * 100).toFixed(0);
-    return `${percentage}% de confianza`;
+    return `${(conf * 100).toFixed(0)}% de confianza`;
   };
 
   return (
@@ -144,6 +152,7 @@ const App = () => {
   );
 };
 
+// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,

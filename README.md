@@ -10,8 +10,8 @@
 2. Start the app
 
    ```bash
-    npx expo start
-    npx expo run:android
+   npx expo start
+   npx expo run:android
    eas login
    eas build --platform android
    eas build --platform android --profile preview
