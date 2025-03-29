@@ -7,7 +7,7 @@ import axios from 'axios';
 // URL de la API (usar HTTPS si está disponible)
 const API_URL = 'http://5.181.218.180:8000/predict';
 
-// Configuración de Axios con HTTPS
+// Configuración de Axios
 const instance = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
@@ -25,8 +25,7 @@ const App = () => {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
+        quality: 1, // Máxima calidad
       });
 
       if (!result.canceled) {
@@ -45,8 +44,7 @@ const App = () => {
       await ImagePicker.requestCameraPermissionsAsync();
       let result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
+        quality: 1, // Máxima calidad
       });
 
       if (!result.canceled) {
@@ -76,10 +74,7 @@ const App = () => {
       const blob = await response.blob();
       const base64Image = await new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => {
-          const base64String = reader.result.split(',')[1];
-          resolve(base64String);
-        };
+        reader.onload = () => resolve(reader.result.split(',')[1]);
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
@@ -112,13 +107,12 @@ const App = () => {
 
   // Función para formatear la confianza
   const formatConfidence = (conf) => {
-    if (conf === null || conf === undefined) return '';
-    return `${(conf * 100).toFixed(0)}% de confianza`;
+    return conf !== null && conf !== undefined ? `${(conf * 100).toFixed(0)}% de confianza` : '';
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Clasificador de Madurez de Plátanos</Text>
+      <Text style={styles.title}>Madurez de Plátanos</Text>
       {image && <Image source={{ uri: image }} style={styles.image} />}
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
@@ -132,22 +126,26 @@ const App = () => {
           </Text>
         </View>
       ) : null}
-      <View style={styles.buttonContainer}>
+
+      {/* Botones en fila */}
+      <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.button} onPress={pickImage}>
-          <FontAwesome name="image" size={20} color="white" style={styles.icon} />
-          <Text style={styles.buttonText}>Elegir de Galería</Text>
+          <FontAwesome name="image" size={20} color="white" />
+          <Text style={styles.buttonText}>Galería</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={takePhoto}>
-          <FontAwesome name="camera" size={20} color="white" style={styles.icon} />
-          <Text style={styles.buttonText}>Usar Cámara</Text>
+          <FontAwesome name="camera" size={20} color="white" />
+          <Text style={styles.buttonText}>Cámara</Text>
         </TouchableOpacity>
-        {image && (
-          <TouchableOpacity style={styles.predictButton} onPress={predictImage}>
-            <FontAwesome name="search" size={20} color="white" style={styles.icon} />
-            <Text style={styles.buttonText}>Predecir Madurez</Text>
-          </TouchableOpacity>
-        )}
       </View>
+
+      {/* Botón para predecir */}
+      {image && (
+        <TouchableOpacity style={styles.predictButton} onPress={predictImage}>
+          <FontAwesome name="search" size={20} color="white" />
+          <Text style={styles.buttonText}>Predecir Madurez</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -177,9 +175,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#3498db',
   },
-  buttonContainer: {
-    width: '100%',
-    alignItems: 'center',
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
   },
   button: {
     flexDirection: 'row',
@@ -187,8 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#3498db',
     padding: 15,
     borderRadius: 10,
-    marginBottom: 10,
-    width: '80%',
+    width: '45%',
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -201,7 +199,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2ecc71',
     padding: 15,
     borderRadius: 10,
-    marginBottom: 10,
+    marginTop: 10,
     width: '80%',
     justifyContent: 'center',
   },
@@ -210,9 +208,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     marginLeft: 10,
-  },
-  icon: {
-    marginRight: 10,
   },
   predictionContainer: {
     marginVertical: 20,
